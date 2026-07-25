@@ -184,7 +184,7 @@ write_files:
 
       cols = [r[1] for r in cur.execute("PRAGMA table_info(server)").fetchall()]
 
-      # Alles bereinigen
+      # Clean up existing entries
       cur.execute('DELETE FROM server')
       cur.execute('DELETE FROM servergroup')
 
@@ -246,59 +246,59 @@ write_files:
       PY=/usr/pgadmin4/venv/bin/python3
       USERS_FILE=/tmp/pgadmin_users.txt
 
-      # Apache stoppt beim VM-Boot automatisch vor cloud-init und öffnet die DB.
-      # Das verhindert, dass setup-web.sh die DB schreiben kann.
+      # Apache starts automatically on VM boot before cloud-init and opens the DB,
+      # which prevents setup-web.sh from writing to it.
       systemctl stop apache2 || true
       sleep 2
 
-      # ── 1. DB initialisieren via setup-web.sh ─────────────────────────────────
+      # ── 1. Initialize DB via setup-web.sh ─────────────────────────────────────
       echo "$LOG STEP 1: setup-web.sh (DB + Apache)..."
       PGADMIN_SETUP_EMAIL='init@example.com' \
       PGADMIN_SETUP_PASSWORD='Init1234!' \
         /usr/pgadmin4/bin/setup-web.sh --yes
       echo "$LOG setup-web.sh done."
 
-      # ── 3. Warten bis Apache/pgAdmin bereit ──────────────────────────────────
+      # ── 3. Wait until Apache/pgAdmin is ready ────────────────────────────────
       echo "$LOG STEP 2: Waiting for pgAdmin..."
       for i in $(seq 1 60); do
         curl -sf http://localhost/pgadmin4/login > /dev/null 2>&1 && echo "$LOG pgAdmin ready." && break
         sleep 5
       done
 
-      # ── 4. TEST: Schema nach setup-web.sh ────────────────────────────────────
+      # ── 4. TEST: DB schema after setup-web.sh ────────────────────────────────
       echo "$LOG STEP 3: DB schema check (before user add)..."
       $PY /usr/local/bin/pgadmin-test-db.py 2>&1
 
-      # ── DIAGNOSE: Hash-Format und Salt ───────────────────────────────────────
+      # ── DIAG: Hash format and salt ───────────────────────────────────────────
       echo "$LOG DIAG: running hash diagnostics..."
       $PY /usr/local/bin/pgadmin-diag-hash.py 2>&1 || true
 
-      # ── 5. Echte User hinzufügen ──────────────────────────────────────────────
+      # ── 5. Add real users ─────────────────────────────────────────────────────
       echo "$LOG STEP 4: Adding real users..."
       systemctl stop apache2
       $PY /usr/local/bin/pgadmin-add-users.py $USERS_FILE
       echo "$LOG add-users done."
 
-      # ── 6. Rechte setzen ─────────────────────────────────────────────────────
+      # ── 6. Set permissions ───────────────────────────────────────────────────
       echo "$LOG STEP 5: Setting permissions..."
       chown -R www-data:www-data /var/lib/pgadmin/
       chmod 660 /var/lib/pgadmin/pgadmin4.db \
                 /var/lib/pgadmin/pgadmin4.db-wal \
                 /var/lib/pgadmin/pgadmin4.db-shm 2>/dev/null || true
 
-      # ── 6b. PostgreSQL starten und Server-Eintrag für alle User anlegen ──────
+      # ── 6b. Start PostgreSQL and register server entry for all users ─────────
       echo "$LOG STEP 5b: Starting PostgreSQL..."
       systemctl start postgresql
       systemctl enable postgresql
       echo "$LOG STEP 5b: Registering pagila server in pgAdmin for all users..."
       $PY /usr/local/bin/pgadmin-add-postgres-servers.py 2>&1
 
-      # ── 7. TEST: DB-Inhalt und Hashes nach User-Add ───────────────────────────
+      # ── 7. TEST: DB content and hashes after user add ────────────────────────
       echo "$LOG STEP 6: DB user + hash check (after user add)..."
       $PY /usr/local/bin/pgadmin-test-db.py 2>&1
       $PY /usr/local/bin/pgadmin-test-hash.py $USERS_FILE 2>&1
 
-      # ── 8. Apache neu starten (wichtig: damit pgAdmin die neue DB liest) ──────
+      # ── 8. Restart Apache so pgAdmin picks up the new DB ─────────────────────
       echo "$LOG STEP 7: Restarting Apache to pick up new users..."
       systemctl restart apache2
       for i in $(seq 1 60); do
@@ -306,7 +306,7 @@ write_files:
         sleep 5
       done
 
-      # ── 9. TEST: HTTP-Status nach Neustart ────────────────────────────────────
+      # ── 9. TEST: HTTP status after restart ───────────────────────────────────
       HTTP_CODE=$(curl -s -o /dev/null -w "%%{http_code}" http://localhost/pgadmin4/login)
       echo "[pgadmin-test] HTTP status after restart: $HTTP_CODE (expected 200)"
 

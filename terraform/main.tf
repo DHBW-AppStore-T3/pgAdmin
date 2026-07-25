@@ -18,7 +18,7 @@ provider "openstack" {
 }
 
 ############################
-# APP-DEFAULTS (vom App-Entwickler vorgegeben)
+# APP-DEFAULTS (defined by the app developer)
 ############################
 
 locals {
@@ -28,13 +28,12 @@ locals {
   enable_floating_ip = true
 }
 
-# Packer-Image aus Glance laden
 data "openstack_images_image_v2" "image" {
   name        = var.image_name
   most_recent = true
 }
 
-# External Network für Floating IPs
+# External network for floating IPs
 data "openstack_networking_network_v2" "external" {
   name = var.floating_ip_pool
 }
@@ -58,10 +57,10 @@ locals {
   users_map  = { for user in local.all_users : user.id => user }
   teams_list = distinct([for user in local.all_users : user.team])
 
-  # Team-Email als pgAdmin-Login.
-  # Team-Namen können Leerzeichen und Sonderzeichen enthalten (z.B. "Team #1"),
-  # die in E-Mail-Adressen ungültig sind. Daher wird der Name normalisiert:
-  # Kleinschreibung, Leerzeichen → "-", alle nicht-alphanumerischen Zeichen (außer "-") entfernen.
+  # Team email used as the pgAdmin login.
+  # Team names may contain spaces and special characters (e.g. "Team #1"),
+  # which are invalid in email addresses. The name is therefore normalized:
+  # lowercased, spaces → "-", all non-alphanumeric characters (except "-") removed.
   # "Team #1" → "team-1@example.com"
   team_account_email = {
     for team in local.teams_list : team =>
@@ -69,7 +68,7 @@ locals {
   }
 }
 
-# Ein Passwort pro Team — keine YAML-Sonderzeichen
+# One password per team — no YAML special characters
 resource "random_password" "team_passwords" {
   for_each         = toset(local.teams_list)
   length           = 16
@@ -85,14 +84,13 @@ resource "random_password" "team_passwords" {
 # TEAM-BASED VMs
 ############################
 
-# Pro Team ein Port-Objekt (mit shared Security Group)
 resource "openstack_networking_port_v2" "team_port" {
   for_each           = toset(local.teams_list)
   network_id         = var.network_uuid
   security_group_ids = [var.shared_secgroup_id]
 }
 
-# Pro Team eine VM — ein pgAdmin-Account für das gesamte Team
+# One VM per team — a single shared pgAdmin account for the entire team
 resource "openstack_compute_instance_v2" "team_pgadmin" {
   for_each = toset(local.teams_list)
 
@@ -144,7 +142,7 @@ resource "openstack_networking_floatingip_associate_v2" "team_fip_assoc" {
 ############################
 
 locals {
-  # Jeder User im Output erhält die Zugangsdaten des Team-Accounts
+  # Each user in the output receives the credentials of the shared team account
   user_accounts = {
     for uid, user in local.users_map : uid => {
       type     = "password"
