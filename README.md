@@ -43,3 +43,21 @@ Bei vorhandenem Packer-Image entfällt der Build — dann ca. **5–10 Minuten**
 Kein File-Upload. Alle Defaults sind auf die DHBW-OpenStack-Infrastruktur vorkonfiguriert.
 
  
+
+## Pod-Variante (ab v2.0.0)
+
+Ab Version `v2.0.0` läuft pgAdmin als Pods statt als VMs (`appstore.yaml`, App-Vertrag v2):
+**ein Pod pro Team** mit zwei Containern – pgAdmin 4 (per HTTPS-Link erreichbar) und
+PostgreSQL mit der Pagila-Beispieldatenbank. Beide teilen sich ein Volume (2 GiB), sodass
+Konfiguration und Daten Pause/Fortsetzen und Neustart überstehen. Keine VM, kein
+Packer-Build, kein OpenStack-Credential.
+
+- **Login:** ein Account pro Team wie bisher. Benutzername `pgadmin@dhbw.de` (fest), das
+  Passwort wird von der Plattform erzeugt und steht unter „Meine Zugänge“.
+- **Datenbank:** der Server „pagila (local)“ ist vorkonfiguriert; das Passwort für
+  `pagila_user` ist `pagila` (wird beim ersten Verbinden abgefragt).
+- **Images:** `image/pgadmin` und `image/postgres` werden von `.github/workflows/image.yml`
+  gebaut (inkl. Smoke-Test mit dem Sicherheitskontext der Plattform). Pagila wird beim
+  Image-Build geladen, nicht beim Start. Nach einer Änderung die neuen Digests in
+  `appstore.yaml` eintragen und eine neue Version taggen.
+- Die Versionen `v1.x` (Terraform/Packer) laufen unverändert weiter.

@@ -1,0 +1,37 @@
+# App contract v2: pgAdmin runs as pods, not as VMs (the terraform/ and packer/
+# directories belong to the VM versions, v1.x). One pod per team with two
+# containers: pgAdmin (exposed) and PostgreSQL with the Pagila sample database.
+apiVersion: appstore/v2
+name: pgadmin
+runtime: kubernetes
+scope: team
+workload:
+  containers:
+    - name: pgadmin
+      # Built by .github/workflows/image.yml (job "pgadmin"). After changing image/pgadmin,
+      # copy the new digest here.
+      image: ghcr.io/dhbw-appstore-t3/apps/pgadmin@sha256:0000000000000000000000000000000000000000000000000000000000000000
+      expose: { port: 8080, path: / }
+      resources: { cpu: "1", memory: 1Gi, requests: { cpu: 100m, memory: 256Mi } }
+      env:
+        # pgAdmin needs a syntactically valid, non-reserved email as login name; the
+        # platform cannot derive one, so it is fixed (the same for every team).
+        - { name: PGADMIN_DEFAULT_EMAIL, value: "pgadmin@dhbw.de" }
+        - { name: PGADMIN_DEFAULT_PASSWORD, from: generated-password }
+        - { name: PGADMIN_LISTEN_PORT, value: "8080" }
+        - { name: PGADMIN_DISABLE_POSTFIX, value: "1" }   # postfix needs sudo
+        - { name: HOME, value: /tmp }
+      writablePaths: [/tmp]
+    - name: postgres
+      # Built by .github/workflows/image.yml (job "postgres"). After changing image/postgres,
+      # copy the new digest here.
+      image: ghcr.io/dhbw-appstore-t3/apps/pgadmin-postgres@sha256:0000000000000000000000000000000000000000000000000000000000000000
+      resources: { cpu: "1", memory: 512Mi, requests: { cpu: 50m, memory: 128Mi } }
+      writablePaths: [/tmp]
+  # One volume for both containers: pgAdmin's data (default data dir) and
+  # PostgreSQL's cluster (subdirectory pgdata) both survive pause/restart.
+  storage: { size: 2Gi, mountPath: /var/lib/pgadmin }
+egress: none
+access:
+  - { type: url, template: "https://{workload}-{deployment}.{domain}" }
+  - { type: password, from: generated-password, username: "pgadmin@dhbw.de" }
