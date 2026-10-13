@@ -1,7 +1,8 @@
 # PostgreSQL with the Pagila sample database for the pod runtime (appstore.yaml).
 # Second container of the pgAdmin pod. The platform runs it as UID 1000 on a
 # read-only root filesystem, with the storage volume mounted at /var/lib/pgadmin.
-FROM docker.io/library/postgres:17.11-bookworm
+# PostgreSQL 18: the current Pagila schema uses uuidv7(), which exists since 18.
+FROM docker.io/library/postgres:18.6-bookworm
 
 # initdb/postgres refuse to run for a UID without a passwd entry, and the
 # platform forces UID 1000. Directory for the template cluster is built below.
