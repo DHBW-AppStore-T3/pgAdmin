@@ -8,7 +8,8 @@ FROM docker.io/library/postgres:17.11-bookworm
 RUN groupadd -g 1000 pg \
  && useradd -u 1000 -g 1000 -d /tmp -s /bin/sh -M pg \
  && mkdir /opt/pagila-pgdata \
- && chown 1000:1000 /opt/pagila-pgdata
+ && chown 1000:1000 /opt/pagila-pgdata \
+ && mkdir -m 755 /opt/pagila
 
 # Pagila sample data, pinned to a commit and verified by checksum.
 ADD --checksum=sha256:071ee940a73c8f4fad2997185788065291607e2c55559e3747959e8275391536 --chmod=0644 \
