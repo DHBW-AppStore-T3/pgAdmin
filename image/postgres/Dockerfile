@@ -1,8 +1,8 @@
 # PostgreSQL with the Pagila sample database for the pod runtime (appstore.yaml).
 # Second container of the pgAdmin pod. The platform runs it as UID 1000 on a
 # read-only root filesystem, with the storage volume mounted at /var/lib/pgadmin.
-# PostgreSQL 18: the current Pagila schema uses uuidv7(), which exists since 18.
-FROM docker.io/library/postgres:18.6-bookworm
+# Pagila is pinned below to a commit that needs neither uuidv7() (PostgreSQL 18) nor pgvector.
+FROM docker.io/library/postgres:17.11-bookworm
 
 # initdb/postgres refuse to run for a UID without a passwd entry, and the
 # platform forces UID 1000. Directory for the template cluster is built below.
@@ -13,10 +13,10 @@ RUN groupadd -g 1000 pg \
  && mkdir -m 755 /opt/pagila
 
 # Pagila sample data, pinned to a commit and verified by checksum.
-ADD --checksum=sha256:071ee940a73c8f4fad2997185788065291607e2c55559e3747959e8275391536 --chmod=0644 \
-  https://raw.githubusercontent.com/devrimgunduz/pagila/ce6e114236bb828e5ec0dc835f65f1bf1b9179f5/pagila-schema.sql /opt/pagila/pagila-schema.sql
-ADD --checksum=sha256:a88efa94c7ae8bc9cf55def4efc9f164d064d5b9cd93f11719ba3b5ace1602f7 --chmod=0644 \
-  https://raw.githubusercontent.com/devrimgunduz/pagila/ce6e114236bb828e5ec0dc835f65f1bf1b9179f5/pagila-data.sql /opt/pagila/pagila-data.sql
+ADD --checksum=sha256:18de72ae8669a0099b47be6d54b60ca5334114f38db65bf21ae82b0fc752d1ad --chmod=0644 \
+  https://raw.githubusercontent.com/devrimgunduz/pagila/23f7fe7a1e9f5772f85fc14f530583ffa258c6d2/pagila-schema.sql /opt/pagila/pagila-schema.sql
+ADD --checksum=sha256:2ca58493e45c01e0978ddf9a9e4796ef3acd3290ac0093b91a6d4e7b6b80d625 --chmod=0644 \
+  https://raw.githubusercontent.com/devrimgunduz/pagila/23f7fe7a1e9f5772f85fc14f530583ffa258c6d2/pagila-data.sql /opt/pagila/pagila-data.sql
 
 # Build the template cluster once, at image build time (not at pod start). The
 # entrypoint copies it to the storage volume on first start.
