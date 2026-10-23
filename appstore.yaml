@@ -1,6 +1,6 @@
-# App contract v2: pgAdmin runs as pods, not as VMs (the terraform/ and packer/
-# directories belong to the VM versions, v1.x). One pod per team with two
-# containers: pgAdmin (exposed) and PostgreSQL with the Pagila sample database.
+# App contract v2: pgAdmin runs as pods, not as VMs (the VM versions, v1.x, are
+# only reachable through their git tags). One pod per team with two containers:
+# pgAdmin (exposed) and PostgreSQL with the Pagila sample database.
 apiVersion: appstore/v2
 name: pgadmin
 runtime: kubernetes
