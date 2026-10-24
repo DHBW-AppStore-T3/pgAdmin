@@ -6,11 +6,13 @@ FROM docker.io/library/postgres:17.11-bookworm
 
 # initdb/postgres refuse to run for a UID without a passwd entry, and the
 # platform forces UID 1000. Directory for the template cluster is built below.
+# gosu is removed: it only serves the upstream entrypoint, which pg-entrypoint.sh replaces (no privilege drop here,
+# the platform sets the UID), and its Go standard library caused all 26 findings of the Trivy scan of this image.
 RUN groupadd -g 1000 pg \
  && useradd -u 1000 -g 1000 -d /tmp -s /bin/sh -M pg \
  && mkdir /opt/pagila-pgdata \
  && chown 1000:1000 /opt/pagila-pgdata \
- && mkdir -m 755 /opt/pagila
+ && mkdir -m 755 /opt/pagila  && rm -f /usr/local/bin/gosu
 
 # Pagila sample data, pinned to a commit and verified by checksum.
 ADD --checksum=sha256:18de72ae8669a0099b47be6d54b60ca5334114f38db65bf21ae82b0fc752d1ad --chmod=0644 \

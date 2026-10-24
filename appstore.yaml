@@ -10,7 +10,7 @@ workload:
     - name: pgadmin
       # Built by .github/workflows/image.yml (job "pgadmin"). After changing image/pgadmin,
       # copy the new digest here.
-      image: ghcr.io/dhbw-appstore-t3/apps/pgadmin@sha256:93da7ac698f37a7048e9d932b148cc0c2107a57a23a76627fa84ac5a47ac3e38
+      image: ghcr.io/dhbw-appstore-t3/apps/pgadmin@sha256:72f40b706255449342cae43d666f1aef735157a4a5dfd4cd0a9f1beb0be7777e
       expose: { port: 8080, path: / }
       resources: { cpu: "1", memory: 1Gi, requests: { cpu: 100m, memory: 256Mi } }
       env:
@@ -25,7 +25,7 @@ workload:
     - name: postgres
       # Built by .github/workflows/image.yml (job "postgres"). After changing image/postgres,
       # copy the new digest here.
-      image: ghcr.io/dhbw-appstore-t3/apps/pgadmin-postgres@sha256:bdf37140c946affecfa5c3c4cc5fe277b4a6d2d1d4e615e5e7064a19f5d0955c
+      image: ghcr.io/dhbw-appstore-t3/apps/pgadmin-postgres@sha256:ca9e7fd19f97de108cb4efbbd78712dc2c3fdf669157f5ca48268affc0ea5f6b
       resources: { cpu: "1", memory: 512Mi, requests: { cpu: 50m, memory: 128Mi } }
       writablePaths: [/tmp]
   # One volume for both containers: pgAdmin's data (default data dir) and
