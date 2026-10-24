@@ -19,3 +19,10 @@ for _ in $(seq 1 40); do
 done
 docker logs pga
 [ "$ok" = 1 ]
+
+# The Python packages upgraded in the Dockerfile still import, and Pillow renders (pgAdmin uses it for MFA QR codes).
+docker exec pga /venv/bin/python -c "
+import PIL, urllib3, certifi, msgpack
+from PIL import Image
+Image.new('RGB', (2, 2)).tobytes()
+print('python libs ok: pillow', PIL.__version__, 'urllib3', urllib3.__version__)"
