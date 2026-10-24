@@ -17,7 +17,7 @@ Keine. Kein File-Upload, alle Einstellungen stehen in `appstore.yaml`.
 
 ## Images und CI
 
-`image/pgadmin` und `image/postgres` werden von `.github/workflows/image.yml` gebaut und mit dem Sicherheitskontext der Plattform getestet (UID 1000, Read-only-Root, keine Capabilities).
+`image/pgadmin` und `image/postgres` werden von `.github/workflows/ci.yml` gebaut (zentrale Pipeline aus `app-registry`: Vertrag, hadolint, Smoke-Test, Trivy) und mit dem Sicherheitskontext der Plattform getestet (UID 1000, Read-only-Root, keine Capabilities; `.github/smoke-test-pgadmin.sh`, `.github/smoke-test-postgres.sh`).
 
 - **Pull Request:** die Images werden gebaut und getestet, aber nicht veröffentlicht.
 - **Push auf `main` oder `dev`:** die Images werden zusätzlich nach GHCR gepusht. Den Digest zeigt die Zusammenfassung des Jobs.
