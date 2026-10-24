@@ -4,18 +4,16 @@
 # 2026-11-30: the build fails again then, so somebody has to look at the new upstream release. Remove entries as upstream
 # releases the fixes.
 
-# pgadmin image: brotli (1 finding(s), e.g. 1.2.0 -> 1.2.1)
+# pgadmin image: brotli: 1 CRITICAL; installed -> fixed e.g. 1.2.0 -> 1.2.1
 GHSA-9v8h-qqgm-4m35 exp:2026-11-30
 
-# pgadmin image: certifi (1 finding(s), e.g. 2026.7.22 -> 2026.10.19)
+# pgadmin image: certifi: 1 CRITICAL; installed -> fixed e.g. 2026.7.22 -> 2026.10.19
 GHSA-6q48-6c7w-9gw2 exp:2026-11-30
 
-# pgadmin image: pillow (1 finding(s), e.g. 12.3.0 -> 13.0.0)
-CVE-2026-112393 exp:2026-11-30
-
-# pgadmin image: pillow (27 finding(s), e.g. see scan)
+# pgadmin image: pillow: 5 CRITICAL, 23 HIGH; installed -> fixed e.g. 12.3.0 -> 13.0.0
 CVE-2026-112390 exp:2026-11-30
 CVE-2026-112392 exp:2026-11-30
+CVE-2026-112393 exp:2026-11-30
 CVE-2026-112397 exp:2026-11-30
 CVE-2026-112398 exp:2026-11-30
 CVE-2026-112399 exp:2026-11-30
@@ -42,23 +40,23 @@ CVE-2026-96644 exp:2026-11-30
 CVE-2026-96778 exp:2026-11-30
 GHSA-78g4-xqwv-q3g8 exp:2026-11-30
 
-# pgadmin image: brotli-libs (1 finding(s), e.g. 1.2.0-r1 -> 1.2.1-r0)
+# pgadmin image: brotli-libs: 1 HIGH; installed -> fixed e.g. 1.2.0-r1 -> 1.2.1-r0
 CVE-2026-111497 exp:2026-11-30
 
-# pgadmin image: msgpack (1 finding(s), e.g. 1.1.2 -> 1.2.1)
+# pgadmin image: msgpack: 1 HIGH; installed -> fixed e.g. 1.1.2 -> 1.2.1
 GHSA-6v7p-g79w-8964 exp:2026-11-30
 
-# pgadmin image: setuptools (1 finding(s), e.g. 70.3.0 -> 78.1.1)
+# pgadmin image: setuptools: 1 HIGH; installed -> fixed e.g. 70.3.0 -> 78.1.1
 CVE-2025-47273 exp:2026-11-30
 
-# pgadmin image: sudo (1 finding(s), e.g. 1.9.17_p2-r1 -> 1.9.17_p2-r2)
+# pgadmin image: sudo: 1 HIGH; installed -> fixed e.g. 1.9.17_p2-r1 -> 1.9.17_p2-r2
 CVE-2026-96512 exp:2026-11-30
 
-# pgadmin image: urllib3 (4 finding(s), e.g. see scan)
+# pgadmin image: urllib3: 4 HIGH; installed -> fixed e.g.  -> 
 CVE-2026-97687 exp:2026-11-30
 CVE-2026-97689 exp:2026-11-30
 
-# postgres image: stdlib (26 finding(s), e.g. v1.24.6 -> 1.24.13, 1.25.7, 1.26.0-rc.3)
+# postgres image: stdlib: 1 CRITICAL, 25 HIGH; installed -> fixed e.g. v1.24.6 -> 1.24.13, 1.25.7, 1.26.0-rc.3
 CVE-2025-61726 exp:2026-11-30
 CVE-2025-61729 exp:2026-11-30
 CVE-2025-68121 exp:2026-11-30
