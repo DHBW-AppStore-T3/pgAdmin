@@ -2,7 +2,7 @@
 # Second container of the pgAdmin pod. The platform runs it as UID 1000 on a
 # read-only root filesystem, with the storage volume mounted at /var/lib/pgadmin.
 # Pagila is pinned below to a commit that needs neither uuidv7() (PostgreSQL 18) nor pgvector.
-FROM docker.io/library/postgres:17.11-bookworm
+FROM docker.io/library/postgres:17.11-trixie
 
 # initdb/postgres refuse to run for a UID without a passwd entry, and the
 # platform forces UID 1000. Directory for the template cluster is built below.
