@@ -25,7 +25,7 @@ workload:
     - name: postgres
       # Built by .github/workflows/image.yml (job "postgres"). After changing image/postgres,
       # copy the new digest here.
-      image: ghcr.io/dhbw-appstore-t3/apps/pgadmin-postgres@sha256:c20b7fd4dee00accc967dad102e3dbeaab4972295ee7d988f866630e5d0a09c7
+      image: ghcr.io/dhbw-appstore-t3/apps/pgadmin-postgres@sha256:8ac75ec8204f1e260fee07535a194b617daca9fbf43f9fec262d22393dd7c2f9
       resources: { cpu: "1", memory: 512Mi, requests: { cpu: 50m, memory: 128Mi } }
       writablePaths: [/tmp]
   # One volume for both containers: pgAdmin's data (default data dir) and
