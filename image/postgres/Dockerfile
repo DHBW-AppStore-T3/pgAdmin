@@ -4,17 +4,6 @@
 # Pagila is pinned below to a commit that needs neither uuidv7() (PostgreSQL 18) nor pgvector.
 FROM docker.io/library/postgres:17.11-bookworm
 
-# Security fixes the base image does not have yet (weekly Trivy scan, 2026-10-26):
-# openssl/libssl3 CVE-2026-84782, fixed in 3.0.22-1~deb12u2. --only-upgrade takes the
-# newest fix from bookworm-security; the version check fails the build instead of
-# shipping without it. Edit this line for the next fix: an unchanged line lets the
-# build cache reuse the old layer, and the upgrade would not run again.
-# hadolint ignore=DL3008
-RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends --only-upgrade openssl libssl3 \
- && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libssl3)" ge 3.0.22-1~deb12u2 \
- && rm -rf /var/lib/apt/lists/*
-
 # initdb/postgres refuse to run for a UID without a passwd entry, and the
 # platform forces UID 1000. Directory for the template cluster is built below.
 # gosu is removed: it only serves the upstream entrypoint, which pg-entrypoint.sh replaces (no privilege drop here,
@@ -49,6 +38,17 @@ RUN set -eux; \
       -c "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO pagila_user;" \
       -c "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO pagila_user;"; \
     pg_ctl -D "$T" -m fast -w stop
+
+# Security updates the base image does not have yet, at every CI build: app-ci.yml sets SECURITY_REFRESH to a new
+# value for each run, so the build cache cannot keep an older package state (app-registry README, "Sicherheitsupdates
+# im Image"). After the expensive steps, which stay cached; everything below is rebuilt in each run.
+# Root for this step only. A newer PostgreSQL 17 minor release reads the cluster built above unchanged.
+USER root
+ARG SECURITY_REFRESH
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends \
+ && rm -rf /var/lib/apt/lists/*
+USER 1000:1000
 
 COPY --chmod=0755 entrypoint.sh /usr/local/bin/pg-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/pg-entrypoint.sh"]
