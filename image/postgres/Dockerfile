@@ -4,6 +4,17 @@
 # Pagila is pinned below to a commit that needs neither uuidv7() (PostgreSQL 18) nor pgvector.
 FROM docker.io/library/postgres:17.11-bookworm
 
+# Security fixes the base image does not have yet (weekly Trivy scan, 2026-10-26):
+# openssl/libssl3 CVE-2026-84782, fixed in 3.0.22-1~deb12u2. --only-upgrade takes the
+# newest fix from bookworm-security; the version check fails the build instead of
+# shipping without it. Edit this line for the next fix: an unchanged line lets the
+# build cache reuse the old layer, and the upgrade would not run again.
+# hadolint ignore=DL3008
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends --only-upgrade openssl libssl3 \
+ && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' libssl3)" ge 3.0.22-1~deb12u2 \
+ && rm -rf /var/lib/apt/lists/*
+
 # initdb/postgres refuse to run for a UID without a passwd entry, and the
 # platform forces UID 1000. Directory for the template cluster is built below.
 # gosu is removed: it only serves the upstream entrypoint, which pg-entrypoint.sh replaces (no privilege drop here,
