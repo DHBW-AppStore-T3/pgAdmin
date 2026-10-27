@@ -10,7 +10,7 @@ workload:
     - name: pgadmin
       # Built by .github/workflows/image.yml (job "pgadmin"). After changing image/pgadmin,
       # copy the new digest here.
-      image: ghcr.io/dhbw-appstore-t3/apps/pgadmin@sha256:c61a7e3a1cab70f213aefe94d4c67fc933d5206d4a2ce708fb83b0eba09bdc2a
+      image: ghcr.io/dhbw-appstore-t3/apps/pgadmin@sha256:8cbf56a00a16222879f5ea5b5f34d798227ecf28dc779d9f630306578fd8a37a
       expose: { port: 8080, path: / }
       resources: { cpu: "1", memory: 1Gi, requests: { cpu: 100m, memory: 256Mi } }
       env:
