@@ -13,7 +13,7 @@ FROM docker.io/dpage/pgadmin4:9.18.0
 # built it.
 USER root
 ARG SECURITY_REFRESH
-RUN apk upgrade --no-cache  && /venv/bin/python -m pip install --no-cache-dir --upgrade pillow urllib3 certifi brotli msgpack setuptools  && /venv/bin/python -m pip uninstall -y pip  && rm -rf /usr/local/lib/python3*/site-packages/pip* /usr/local/bin/pip*
+RUN apk upgrade --no-cache  && /venv/bin/python -m pip install --no-cache-dir --upgrade pillow urllib3 certifi brotli msgpack setuptools authlib dnspython oauthlib  && /venv/bin/python -m pip uninstall -y pip  && rm -rf /usr/local/lib/python3*/site-packages/pip* /usr/local/bin/pip*
 USER 5050
 
 # Non-empty config_distro.py: the upstream entrypoint only writes this file when
