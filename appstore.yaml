@@ -31,7 +31,12 @@ workload:
   # One volume for both containers: pgAdmin's data (default data dir) and
   # PostgreSQL's cluster (subdirectory pgdata) both survive pause/restart.
   storage: { size: 2Gi, mountPath: /var/lib/pgadmin }
-egress: none
+# What the pod may reach (the contract: app-registry README, "network"). PostgreSQL listens on the loopback of the same
+# pod and Pagila is in the image: no internet, and nobody can switch it on. Pods of one deployment (one per team): a
+# choice, off by default.
+network:
+  internet: { allowed: false, default: false }
+  podNetwork: { allowed: true, default: false }
 access:
   - { type: url, template: "https://{workload}-{deployment}.{domain}" }
   - { type: password, from: generated-password, username: "pgadmin@dhbw.de" }
