@@ -5,6 +5,7 @@ apiVersion: appstore/v2
 name: pgadmin
 runtime: kubernetes
 scope: team
+scopeChoice: true
 workload:
   containers:
     - name: pgadmin

@@ -8,6 +8,10 @@ Die App läuft als Pods (`appstore.yaml`, App-Vertrag v2): **ein Pod pro Team** 
 
 Es wird **ein pgAdmin-Account pro Team** erstellt – alle Mitglieder eines Teams teilen sich denselben Login.
 
+Standard ist ein Pod je Team (`scope: team`). Mit `scopeChoice: true` kann die Lehrperson im Wizard unter
+„Experteneinstellungen“ stattdessen einen Pod je Person wählen; dann hat jede Person ihren eigenen pgAdmin und
+ihre eigene Datenbank.
+
 - **Login:** Benutzername `pgadmin@dhbw.de` (fest), das Passwort wird von der Plattform erzeugt und steht unter „Meine Zugänge“.
 - **Datenbank:** der Server „pagila (local)“ (Film-/Videoverleih-Schema) ist im pgAdmin-Account vorkonfiguriert; das Passwort für `pagila_user` ist `pagila` (wird beim ersten Verbinden abgefragt).
 
